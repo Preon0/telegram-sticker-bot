@@ -106,7 +106,7 @@ def start_bot():
                 MessageHandler(filters.Sticker.ALL, get_sticker),
                 MessageHandler(filters.TEXT & ~filters.COMMAND, send_sticker)
             ],
-            ask_name: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_name)]
+            ask_name: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_name)],
             ask_link: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_link)]
         },
         fallbacks=[CommandHandler("cancel", cancel_change)],
