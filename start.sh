@@ -1,2 +1,2 @@
 #!/bin/bash
-make sticker set.py
+python make_sticker_set.py
