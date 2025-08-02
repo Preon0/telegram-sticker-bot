@@ -8,6 +8,8 @@ name = []
 link = []
 u_id = []
 
+ask_sticker, ask_name, ask_link = range(3)
+
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
 async def start(update, context):
@@ -43,18 +45,13 @@ async def get_sticker(update, context):
     await update.message.reply_text("خب حالا یه اسم خوشگل عین خودت برای پکت بفرست برام.")
     return ask_name
 
-async def get_name(update, cotext):
+async def get_name(update, context):
     the_name = update.message.text
     the_id = update.message.from_user.id
     u_id.append(the_id)
     name.append(the_name)
     await update.message.reply_text("مرسییی از  تووو.\nحالا یه لینک براش بنویس. یه متن انگلیسی به‌هم‌چسبیده باید باشه!")
     return ask_link
-
-async def get_link(update, context):
-    the_link = update.message.text
-    link.append(the_link)
-    make_pack(update, context, sticker_files, u_id[0], link[0], name[0])
 
 async def make_pack(update, context, packlist, users_id, user_link, user_title):
     sticker, emoji = packlist[0]
@@ -81,6 +78,11 @@ async def make_pack(update, context, packlist, users_id, user_link, user_title):
     
     await context.bot.send_message(chat_id=update.effective_chat.id, text=f"استیکرت آماده‌س زیبا!\n{sticker_link}")
 
+async def get_link(update, context):
+    the_link = update.message.text
+    link.append(the_link)
+    await make_pack(update, context, sticker_files, u_id[0], link[0], name[0])
+
 async def change_name(update, context):
     await update.message.reply_text("می‌بینم که می‌خوای اسم یه پکو عوض کنی.\nیکی از استیکرای پکو بفرست برام.")
     return ask_sticker
@@ -92,7 +94,6 @@ async def cancel_change(update, context):
 async def cancel(update, context):
     await update.message.reply_text("چیزی برای کنسل‌کردن نیستش که.")
 
-ask_sticker, ask_name, ask_link = range(3)
 
 def start_bot():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
