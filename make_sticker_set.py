@@ -4,6 +4,9 @@ import aiohttp
 import os
 
 sticker_files = []
+name = []
+link = []
+u_id = []
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
@@ -37,8 +40,21 @@ async def get_sticker(update, context):
         sticker_files.append((filename, emoji))
 
     await session.close()
-    
-    
+    await update.message.reply_text("خب حالا یه اسم خوشگل عین خودت برای پکت بفرست برام.")
+    return ask_name
+
+async def get_name(update, cotext):
+    the_name = update.message.text
+    the_id = update.message.from_user.id
+    u_id.append(the_id)
+    name.append(the_name)
+    await update.message.reply_text("مرسییی از  تووو.\nحالا یه لینک براش بنویس. یه متن انگلیسی به‌هم‌چسبیده باید باشه!")
+    return ask_link
+
+async def get_link(update, context):
+    the_link = update.message.text
+    link.append(the_link)
+    make_pack(update, context, sticker_files, u_id[0], link[0], name[0])
 
 async def make_pack(update, context, packlist, users_id, user_link, user_title):
     sticker, emoji = packlist[0]
@@ -76,12 +92,12 @@ async def cancel_change(update, context):
 async def cancel(update, context):
     await update.message.reply_text("چیزی برای کنسل‌کردن نیستش که.")
 
-ask_sticker = 0
+ask_sticker, ask_name, ask_link = range(3)
 
 def start_bot():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("cancel", cancel))
+    # app.add_handler(CommandHandler("cancel", cancel))
     
     change_handler = ConversationHandler(
         entry_points=[CommandHandler("change_name", change_name)],
@@ -90,6 +106,8 @@ def start_bot():
                 MessageHandler(filters.Sticker.ALL, get_sticker),
                 MessageHandler(filters.TEXT & ~filters.COMMAND, send_sticker)
             ],
+            ask_name: [MessageHandler(filters.TEXT ~filters.COMMAND, get_name)]
+            ask_link: [MessageHandler(filters.TEXT ~filters.COMMAND, get_link)]
         },
         fallbacks=[CommandHandler("cancel", cancel_change)],
     )
